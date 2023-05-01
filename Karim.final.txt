@@ -1,0 +1,733 @@
+#include <iostream>
+#include <string>
+using namespace std;
+void main_menu(); //Main menu function
+
+//***Start of Admin Functions***
+
+#define max_admin 5
+int j = 1; //Election ID counter
+
+// Electors previliges
+#define num_electors 100//the max number of electors
+
+int adminCount = 0;
+int electorCount = 0;// electors counter
+using namespace std;
+
+
+using namespace std;
+
+struct ElectionAdmin // Struct for storing Election Administrator data
+{
+    string ID;
+    string name;
+    string password;
+    string email;
+    string address;
+    string phone;
+
+    int numElections = 0; // Number of elections for this administrator
+} admins[5];
+
+struct Election // Struct for storing Election  data
+{
+    int ID;
+    string Name;
+    string Description;
+    string Nominees[100];
+} Election[100];
+
+bool login();
+void editInfo();
+ElectionAdmin signup();
+void admin_login_signup(); // administrator login and signup function
+
+
+//Admin privileges
+void admin_menu();
+int inputElection(int& size);
+void displayElection();
+void displayElection_only();
+
+void admin_edit_choices(); //Admin to choose to edit description or nominees
+void edit_Election_Description(); //Admin edits the description of the selected election
+void Edit_Nominee();//Admin edits the description of the selected election
+
+//***End of Admin Functions***
+
+// elector's struct
+
+struct Electorinfo
+{
+    string ID;
+    string Name;
+    string Password;
+    string Email;
+    string Address;
+    string Phone;
+    string Code;
+
+
+
+}electors[100];// Elector's struct
+
+
+// elector's functions
+bool Elector_login(Electorinfo electors[], int electorCount);     // a function for logging in
+void Elector_signup(Electorinfo electors[], int& electorCount);  // a fuction for singing up
+void Elector_edit_info();                                       // a funtion for editing infomation
+
+void elector_login_signup();                                  //a fuction for both sign in and login
+void elector_page();                                         // a function for editing information,viewing finished election and voting
+
+
+
+
+
+int main()
+{
+    main_menu();
+}
+void main_menu() //Main menu function
+{
+    int choice;
+
+    cout << "\n\n\t\t_____Welcome to the Online Votting System______\t\t\n\n\n";
+
+    cout << "\t\tPress 1 :\t Elector \t\t" << endl;
+    cout << "\t\tPress 2 :\t Election Administrator \t\t" << endl;
+
+
+    cout << "\nPlease Enter your Choice : ";
+    cin >> choice;
+
+    switch (choice)
+    {
+    case 1:
+        system("cls");
+        elector_login_signup();
+        break;
+
+    case 2:
+
+        system("cls");
+        admin_login_signup();
+
+
+        break;
+
+
+    default:
+        cout << "\n\nInvalid Entry , please try again.\n\n" << endl;
+        break;
+    }
+}
+//Start of Admin Functions
+
+// Adminstrator Signup function
+
+ElectionAdmin signup()
+{
+    int count = 0;
+    if (count < max_admin)
+    {
+        ElectionAdmin admin;
+
+        cout << "Please Enter Your Details to Signup." << endl;
+
+        cout << "Enter Your ID:";
+        cin >> admin.ID;
+        cout << "Enter Your Name:";
+        cin.ignore();
+        getline(cin, admin.name);
+
+        cout << "Enter Your Password:";
+        cin >> admin.password;
+        cout << "Enter Your Email :";
+        cin >> admin.email;
+        cout << "Enter Your Address : ";
+        cin.ignore();
+        getline(cin, admin.address);
+
+        cout << "Enter Your Phone number(minimum 10 didits.) ";
+        cin >> admin.phone;
+
+        admins[count] = admin;
+        count++;
+
+        return admin;
+    }
+    cout << "Maximum number of Adminstrators reached ! " << endl;
+    system("cls");
+
+}
+
+// Administrator login function
+bool login()
+{
+    string adminId, adminPassword;
+
+    cout << "Enter Your UserID :";
+    cin >> adminId;
+    cout << "Enter Your Password :";
+    cin >> adminPassword;
+    for (int i = 0; i < 5; i++)
+    {
+        if (admins[i].ID == adminId && admins[i].password == adminPassword)
+            return true;
+
+
+    }
+    return false;
+    cout << "ERROR!, Invalid UserID or Password . Please Try Again! " << endl;
+    system("cls");
+}
+void admin_login_signup()
+{
+    bool islogin = false;
+    int count = 0;
+    int choice;
+
+    do
+    {
+        cout << "\n\n\t\t_____Administrator Login and Signup Page______\t\t\n\n\n";
+
+        cout << "\t\tPress 1 :\t Signup \t\t" << endl;
+        cout << "\t\tPress 2 :\t login \t\t" << endl;
+        cout << "\t\tPress 3 :\t Logout \t\t\n\n" << endl;
+
+        cout << "Please Enter your Choice : ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+
+            signup();
+            system("cls");
+            cout << "\nYou have signup successfully !\n" << endl;
+            break;
+
+        case 2:
+
+            islogin = login();
+            system("cls");
+            if (islogin)
+            {
+                cout << "login successful !\n\n" << endl;
+                admin_menu();
+
+            }
+            else
+            {
+                cout << " login failed ! , please try again.\n\n" << endl;
+
+            }
+            break;
+
+        case 3:
+            cout << "\n\n You are logged out successfully !\n\n" << endl;
+
+            break;
+            main();
+
+        default:
+            cout << "\n\nInvalid Entry , please try again.\n\n" << endl;
+
+            break;
+
+        }
+
+
+
+
+    } while (choice != 3);
+
+
+}
+
+// Adminstrator edit info function, the admin is not allowed to edit key info like id and name
+
+
+//Administrator privileges:
+
+int inputElection(int& size)//Election registration function
+{
+    int result = j;
+    char answer;
+    do
+    {
+        cout << "Enter Election name:" << endl;
+        cin.ignore();
+        getline(cin, Election[j].Name);
+
+        cout << "Enter Election description:" << endl;
+        getline(cin, Election[j].Description);
+
+        Election[j].ID = 100000 + j;
+        cout << "The ELection ID is: " << Election[j].ID << endl;
+
+
+        cout << "How many nominees do you want to register?" << endl;
+        cin >> size;
+
+        cout << "Enter nominees names" << endl;
+        cin.ignore();
+        for (int i = 1; i <= size; i++) //nominees input
+        {
+            getline(cin, Election[j].Nominees[i]);
+
+        }
+        j++;
+        cout << " Do you want to add more elections? (y / n ) " << endl;
+        cin >> answer;
+    } while (answer == 'y' || answer == 'Y');
+    return result;
+}
+void editInfo() //Funtion to edit admin's info
+{
+    int i;
+    string n_id;
+    string n_password;
+    string n_email;
+    string n_address;
+    string n_phone;
+
+    cout << "Enter Your UserID :";
+    cin >> n_id;
+
+
+
+
+    for (i = 0; i < max_admin; i++)
+    {
+        if (admins[i].ID == n_id)
+        {
+            cout << "Enter your new password : ";
+            cin >> admins[i].password;
+            cout << "Enter your new email : ";
+            cin >> admins[i].email;
+            cout << "Enter your new address : ";
+            cin >> admins[i].address;
+            cout << "Enter your new phone number : ";
+            cin >> admins[i].phone;
+
+            admins[i].address = n_address;
+            admins[i].phone = n_phone;
+
+            cout << "Information updated successfully ! thanks " << admins[i].name << "!" << endl;
+        }
+
+        else
+            cout << " User not found or please enter a valid UserID !" << endl;
+
+    }
+}
+
+void displayElection() //Election and Nominees' display function
+{
+    int n = 0;
+    cout << "The registered elections and their candidates are: " << endl;
+
+    for (int i = 1; i < j; i++)
+    {
+        cout << Election[i].ID << '\t';
+        cout << "Election name:\t" << Election[i].Name << '\t';
+        cout << Election[i].Description << '\t' << endl;
+
+        cout << "Nominees are:" << endl;
+        for (int k = 1; k <= 6; k++) //nominees output
+        {
+            cout << k << ".\t" << Election[i].Nominees[k] << endl;
+        }
+
+    }
+}
+void displayElection_only()//Displays the registered elections only
+{
+    {
+        int n = 0;
+        cout << "The registered elections and their candidates are: " << endl;
+
+        for (int i = 1; i < j; i++)
+        {
+            cout << Election[i].ID << '\t';
+            cout << "Election name:\t" << Election[i].Name << '\t';
+            cout << Election[i].Description << '\t' << endl;
+        }
+    }
+}
+void admin_menu() //Admin main menu function
+{
+    int choice;
+
+    do
+    {
+        cout << "\n\n\t\t_____Welcome to the Administrator Menu______\t\t\n\n\n";
+
+        cout << "\t\tPress 1 :\t Edit Information \t\t" << endl;
+        cout << "\t\tPress 2 :\t Create a New Election \t\t" << endl;
+        cout << "\t\tPress 3 :\t Edit Elections \t\t" << endl;
+        cout << "\t\tPress 4 :\t Logout \t\t\n\n" << endl;
+
+
+        cout << "Please Enter your Choice : ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+
+            editInfo();
+            break;
+
+        case 2:
+            system("cls");
+
+            int n;
+            inputElection(n);
+            displayElection_only();
+            break;
+
+        case 3:
+            system("cls");
+
+            admin_edit_choices();
+            break;
+
+        case 4:
+            cout << "\n\n You are logged out successfully !\n\n" << endl;
+            system("cls");
+            break;
+            main();
+
+        default:
+            cout << "\n\nInvalid Entry , please try again.\n\n" << endl;
+            break;
+
+        }
+
+    } while (choice != 4);
+
+}
+void admin_edit_choices() //Function for Admin to choose to edit election description or nominee 
+{
+    int choice;
+
+    do
+    {
+        cout << "\n\n\t\t_____Edit Election Menu______\t\t\n\n\n";
+
+        cout << "\t\tPress 1 :\t Edit Election Description \t\t" << endl;
+        cout << "\t\tPress 2 :\t Election Nominees \t\t" << endl;
+        cout << "\t\tPress 3 :\t Go Back to the previous Menu \t\t\n\n" << endl;
+
+
+        cout << "Please Enter your Choice : ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            system("cls");
+            edit_Election_Description();
+            break;
+        case 2:
+            system("cls");
+            Edit_Nominee();
+            break;
+
+        default:
+            cout << "\n\nInvalid Entry , please try again.\n\n" << endl;
+
+            break;
+
+        }
+
+    } while (choice != 3);
+
+}
+void edit_Election_Description() //Edit Election Description function
+{
+    displayElection_only();
+    int i; //The election ID index
+    cout << "\nEnter the ID of the Election to be edited" << endl;
+    cin >> i;
+
+    i = i - 100000;
+
+    if (i <= j)
+    {
+        cout << "\nEnter the Updated Election description:" << endl;
+        cin.ignore();
+        getline(cin, Election[i].Description);
+    }
+    else
+        cout << "Invalid Election ID.";
+
+    displayElection_only();
+}
+void Edit_Nominee() //Edit Election Description function
+{
+    int i,//The election ID index
+        n;//The nominees index
+
+    displayElection();
+
+    cout << "Enter the ID of the Election to be edited" << endl;
+    cin >> i;
+    i = i - 100000;
+
+    if (i <= j)
+    {
+        cout << "Election name:\t" << Election[i].Name << '\t';
+        cout << Election[i].Description << '\t' << endl;
+        cout << "Nominees are:" << endl;
+        for (int k = 1; k <= 6; k++) //nominees output
+        {
+            cout << k << ".\t" << Election[i].Nominees[k] << endl;
+        }
+
+        cout << "Enter the Number to be edited" << endl;
+        cin >> n;
+        cout << "Enter the Updated Nominee:" << endl;
+        cin.ignore();
+        getline(cin, Election[i].Nominees[n]);
+
+        displayElection();
+    }
+    else
+    {
+        cout << "I'm sorry, that is an invalid selection.\n"
+            << "The speakers range from 0-9.\n"
+            << "Please select this option again.\n\n";
+    }
+}
+//End of Admin Functions
+
+
+// Beginning of Elector functions
+
+
+// elector loggin function
+
+bool Elector_login(Electorinfo electors[], int electorCount)
+{
+    string Username, password;
+    cout << "Enter your Username : ";
+    cin.ignore();
+    getline(cin, Username);
+    cout << "Enter your password: ";
+    cin >> password;
+    for (int i = 0; i < num_electors; i++) {
+        if (electors[i].ID == Username && electors[i].Password == password) {
+            return true;
+            cout << "you are logged in successfully" << endl;
+
+        }
+    }
+    return false;
+    cout << "\n\nInvalid Username or password.\n\n" << endl;
+}
+
+
+//  elector  function for signing up
+
+void Elector_signup(Electorinfo electors[], int& electorCount)
+
+{
+
+
+    if (electorCount < num_electors)
+    {
+        Electorinfo newUser;
+
+
+
+        cout << "Enter Your Username: ";
+        cin >> newUser.ID;
+        cout << "Enter your name: ";
+        cin.ignore();
+        getline(cin, newUser.Name);
+        cout << "Enter your password: ";
+        cin >> newUser.Password;
+        cout << "Enter your email: ";
+        cin >> newUser.Email;
+        cout << "Enter your address: ";
+        cin >> newUser.Address;
+        cout << "Enter your phone number: ";
+        cin >> newUser.Phone;
+        cout << "Enter your code: ";
+        cin >> newUser.Code;
+        electors[electorCount] = newUser;
+        electorCount++;
+        cout << "\n\nYou have signed up successfully!\n\n" << endl;
+
+
+    }
+
+    cout << "\n Maximum Number of Voters reached!!\n\n ";
+
+}
+
+// edit elector's infomation function
+
+void Elector_edit_info()
+{
+
+    string Username, new_name, new_password, new_address, new_phone;
+    cout << "Enter your Username: ";
+    cin >> Username;
+
+    bool elector_info_updated = false;
+
+    for (int i = 0; i < num_electors; i++)
+    {
+        if (electors[i].ID == Username) {
+
+            cout << "\nWelcome! " << electors[i].Name << endl;
+            cout << "\n____You can now edit your details._____\n\n" << endl;
+            cout << "Enter your new name: ";
+            cin.ignore();
+            getline(cin, new_name);
+            cout << "Enter your new password: ";
+            cin >> new_password;
+            cout << "Enter your new address: ";
+            cin >> new_address;
+            cout << "Enter your new phone number: ";
+            cin >> new_phone;
+            electors[i].Name = new_name;
+            electors[i].Password = new_password;
+            electors[i].Address = new_address;
+            electors[i].Phone = new_phone;
+
+            elector_info_updated = true;
+            system("cls");
+
+            cout << new_name;
+
+        }
+    }
+    if (elector_info_updated)
+    {
+        cout << ", Information updated successfully!\n\n" << endl;
+    }
+    else
+    {
+        cout << "\n\nYou must log in first or enter a valid Username.\n\n" << endl;
+    }
+}
+
+//elector   fuction for viewing election's results
+
+void Elector_viewresults()
+{
+
+}
+
+//a function for elector logging in and signup.
+
+void elector_login_signup()
+{
+
+    bool 	Islogged_in = false;
+    int count = 0;
+
+    int option;
+
+    do
+    {
+
+        cout << "\t\t\t__________ Elector's Logging in and Signup page____________\t\t\n\n\n" << endl;
+
+        cout << "\t\t\t PLEASE PRESS 1: To SignUp.\n\n" << endl;
+        cout << "\t\t\t PLEASE PRESS 2:To Login.\n\n" << endl;
+        cout << "\t\t\t PLEASE PRESS 3:To Exit.\n\n" << endl;
+
+        cout << "Please Enter Your Choice:";
+        cin >> option;
+        cout << endl;
+        switch (option)
+        {
+        case 1:
+            Elector_signup(electors, electorCount);
+            system("cls");
+            cout << "\nYou have Signed Up Successfully!!\n\n" << endl;
+            break;
+
+        case 2:
+
+            Islogged_in = Elector_login(electors, electorCount);
+            system("cls");
+            if (Islogged_in)
+            {
+                cout << "\n\nYou are logged in Successfully!\n\n" << endl;
+                elector_page();
+            }
+            else
+            {
+                cout << "\n\nLogin failed! Please Try Again." << endl;
+            }
+            break;
+
+        case 3:
+            cout << "\n\nGoodbye! Thanks for Your time!." << endl;
+            break;
+            system("cls");
+            main();
+            break;
+
+        default:
+            cout << "\n\nInvalid Entry or Choice please try again!" << endl;
+            main();
+            break;
+
+        }
+
+    } while (option != 3);
+}
+
+// a function for editing information,viewing finished election and voting
+
+void elector_page()
+{
+    int choice;
+
+    do
+    {
+        cout << "\t\t\t____________ Elector Page_____________\t\t\t\n\n" << endl;
+
+        cout << "\t\t\t Press 1:To Edit Information\n\n" << endl;
+        cout << "\t\t\t Press 2:To Vote \n\n" << endl;
+        cout << "\t\t\t Press 3:To View Finished Elections\n\n" << endl;
+        cout << "\t\t\t Press 4:To Exit the Page\n\n";
+
+        cout << "Enter Your Choice:";
+        cin >> choice;
+        cout << endl;
+        switch (choice)
+        {
+
+        case 1:
+            Elector_edit_info();
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            system("cls");
+            cout << "\n\nGoodbye! Thanks for Your time!." << endl;
+            break;
+        default:
+            cout << "\n\nInvalid Entry or Choice please try again!" << endl;
+            break;
+
+        }
+    } while (choice != 4);
+
+
+}
+
+
